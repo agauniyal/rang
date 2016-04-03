@@ -117,8 +117,9 @@ namespace rang {
 	template <typename T>
 	inline enable<T> operator<<(std::ostream &os, T const value)
 	{
+        static bool hasColors = supportsColor();
 		std::streambuf const *osbuf = os.rdbuf();
-		return ((supportsColor()) && (isTerminal(osbuf)))
+		return ((hasColors) && (isTerminal(osbuf)))
 		           ? os << "\033[" << static_cast<int>(value) << "m"
 		           : os;
 	}
