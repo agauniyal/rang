@@ -25,12 +25,6 @@
 
 namespace rang {
 
-namespace {
-	std::streambuf const *RANG_coutbuf = std::cout.rdbuf();
-	std::streambuf const *RANG_cerrbuf = std::cerr.rdbuf();
-	std::streambuf const *RANG_clogbuf = std::clog.rdbuf();
-}
-
 enum class style {
 	reset     = 0,
 	bold      = 1,
@@ -117,7 +111,7 @@ inline bool supportsColor()
 
 inline bool isTerminal(const std::streambuf *osbuf)
 {
-	if (osbuf == RANG_coutbuf) {
+	if (osbuf == std::cout.rdbuf()) {
 #if defined(OS_LINUX) || defined(OS_MAC)
 		return isatty(fileno(stdout)) ? true : false;
 #elif defined(OS_WIN)
@@ -125,7 +119,7 @@ inline bool isTerminal(const std::streambuf *osbuf)
 #endif
 	}
 
-	if (osbuf == RANG_cerrbuf || osbuf == RANG_clogbuf) {
+	if (osbuf == std::cerr.rdbuf() || osbuf == std::clog.rdbuf()) {
 #if defined(OS_LINUX) || defined(OS_MAC)
 		return isatty(fileno(stderr)) ? true : false;
 #elif defined(OS_WIN)
