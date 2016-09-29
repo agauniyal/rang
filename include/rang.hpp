@@ -14,7 +14,9 @@
 #if defined(OS_LINUX) || defined(OS_MAC)
 #include <unistd.h>
 #elif defined(OS_WIN)
+#include <windows.h>
 #include <io.h>
+#include <VersionHelpers.h>
 #endif
 
 #include <algorithm>
@@ -175,6 +177,76 @@ using enableStd = typename std::enable_if
 		std::ostream&
 	>::type;
 
+#ifdef OS_WIN
+HANDLE getVersionDependentHandle()
+{
+	if (IsWindowsVersionOrGreater(10, 0, 0))
+		return nullptr;
+	return GetStdHandle(STD_OUTPUT_HANDLE);
+}
+
+inline HANDLE getConsoleHandle()
+{
+	static HANDLE h = getVersionDependentHandle();
+	return h;
+}
+
+inline WORD reverseRGB(WORD rgb)
+{
+	static const WORD rev[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
+	return rev[rgb];
+}
+
+inline void setWinAttribute(rang::bg col, WORD& state)
+{
+	state &= 0xFF0F;
+	state |= reverseRGB(static_cast<WORD>(col) - 40) << 4;
+}
+
+inline void setWinAttribute(rang::fg col, WORD& state)
+{
+	state &= 0xFFF0;
+	state |= reverseRGB(static_cast<WORD>(col) - 30);
+}
+
+inline void setWinAttribute(rang::bgB col, WORD& state)
+{
+	state &= 0xFF0F;
+	state |= (0x8 | reverseRGB(static_cast<WORD>(col) - 100)) << 4;
+}
+
+inline void setWinAttribute(rang::fgB col, WORD& state)
+{
+	state &= 0xFFF0;
+	state |= (0x8 | reverseRGB(static_cast<WORD>(col) - 90));
+}
+
+inline WORD& current_state()
+{
+	static WORD state = (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+	return state;
+}
+
+template <typename T>
+inline enableStd<T> setColor(std::ostream &os, T const value)
+{
+	HANDLE h = getConsoleHandle();
+	if (h)
+	{
+		setWinAttribute(value, current_state());
+		SetConsoleTextAttribute(h, current_state());
+		return os;
+	}
+	return os << "\033[" << static_cast<int>(value) << "m";
+}
+#else
+template <typename T>
+inline enableStd<T> setColor(std::ostream &os, T const value)
+{
+	return os << "\033[" << static_cast<int>(value) << "m";
+}
+#endif
+
 template <typename T>
 using enableControl = typename std::enable_if
 	<
@@ -187,8 +259,7 @@ inline enableStd<T> operator<<(std::ostream &os, T const value)
 {
 	std::streambuf const *osbuf = os.rdbuf();
 	return (os.iword(getIword()) || ((supportsColor()) && (isTerminal(osbuf))))
-	  ? os << "\033[" << static_cast<int>(value) << "m"
-	  : os;
+	  ? setColor(os,value) : os;
 }
 
 template <typename T>
