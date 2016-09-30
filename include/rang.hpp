@@ -14,6 +14,7 @@
 #if defined(OS_LINUX) || defined(OS_MAC)
 #include <unistd.h>
 #elif defined(OS_WIN)
+#include <windows.h>
 #include <io.h>
 #include <VersionHelpers.h>
 #endif
