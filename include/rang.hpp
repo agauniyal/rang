@@ -259,7 +259,19 @@ inline enableStd<T> operator<<(std::ostream &os, T const value)
 {
 	std::streambuf const *osbuf = os.rdbuf();
 	return (os.iword(getIword()) || ((supportsColor()) && (isTerminal(osbuf))))
-	  ? setColor(os,value) : os;
+		? setColor(os, value) : os;
+}
+
+template <typename T>
+inline enableControl<T> operator<<(std::ostream &os, T const value)
+{
+	if (value == rang::control::forceColor) {
+		os.iword(getIword()) = 1;
+	} else if (value == rang::control::autoColor) {
+		os.iword(getIword()) = 0;
+	}
+
+	return os;
 }
 
 template <typename T>
