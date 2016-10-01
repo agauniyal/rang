@@ -273,18 +273,6 @@ inline enableControl<T> operator<<(std::ostream &os, T const value)
 
 	return os;
 }
-
-template <typename T>
-inline enableControl<T> operator<<(std::ostream &os, T const value)
-{
-	if (value == rang::control::forceColor) {
-		os.iword(getIword()) = 1;
-	} else if (value == rang::control::autoColor) {
-		os.iword(getIword()) = 0;
-	}
-
-	return os;
-}
 }
 
 #undef OS_LINUX
