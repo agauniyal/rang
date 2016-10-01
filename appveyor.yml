@@ -1,0 +1,28 @@
+version: 0.1.{build}
+skip_tags: true
+os:
+- Windows Server 2012 R2
+- MinGW
+- Visual Studio 2015
+init:
+- cmd: cmake --version
+before_build:
+- cmd: >-
+    mkdir build
+
+    cd build
+
+    cmake ..
+
+    cd ../
+build:
+  parallel: true
+  verbosity: minimal
+test_script:
+- cmd: >-
+    cd build\bin\Debug
+
+    runTest.exe
+
+    vTest.exe
+deploy: off
