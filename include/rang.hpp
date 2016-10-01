@@ -14,21 +14,46 @@
 #if defined(OS_LINUX) || defined(OS_MAC)
 #include <unistd.h>
 #elif defined(OS_WIN)
+#include <windows.h>
 #include <io.h>
+#include <VersionHelpers.h>
 #endif
 
 #include <algorithm>
 #include <cstdlib>
+#include <ios>
 #include <iostream>
 #include <iterator>
 #include <type_traits>
 
 namespace rang {
 
-namespace {
-	std::streambuf const *RANG_coutbuf = std::cout.rdbuf();
-	std::streambuf const *RANG_cerrbuf = std::cerr.rdbuf();
-	std::streambuf const *RANG_clogbuf = std::clog.rdbuf();
+inline std::streambuf const*& RANG_coutbuf() {
+	static std::streambuf const* pOutbuff = std::cout.rdbuf();
+	return pOutbuff;
+}
+
+inline std::streambuf const*& RANG_cerrbuf() {
+	static std::streambuf const* pErrbuff = std::cerr.rdbuf();
+	return pErrbuff;
+}
+
+inline std::streambuf const*& RANG_clogbuf() {
+	static std::streambuf const* pLogbuff = std::clog.rdbuf();
+	return pLogbuff;
+}
+
+inline int getIword()
+{
+	static int i = std::ios_base::xalloc();
+	return i;
+}
+
+void init()
+{
+	RANG_coutbuf();
+	RANG_cerrbuf();
+	RANG_clogbuf();
 }
 
 enum class style {
@@ -87,6 +112,11 @@ enum class bgB {
 	gray    = 107
 };
 
+enum class control {
+	autoColor = 0,
+	forceColor = 1
+};
+
 inline bool supportsColor()
 {
 
@@ -117,7 +147,7 @@ inline bool supportsColor()
 
 inline bool isTerminal(const std::streambuf *osbuf)
 {
-	if (osbuf == RANG_coutbuf) {
+	if (osbuf == RANG_coutbuf()) {
 #if defined(OS_LINUX) || defined(OS_MAC)
 		return isatty(fileno(stdout)) ? true : false;
 #elif defined(OS_WIN)
@@ -125,7 +155,7 @@ inline bool isTerminal(const std::streambuf *osbuf)
 #endif
 	}
 
-	if (osbuf == RANG_cerrbuf || osbuf == RANG_clogbuf) {
+	if (osbuf == RANG_cerrbuf() || osbuf == RANG_clogbuf()) {
 #if defined(OS_LINUX) || defined(OS_MAC)
 		return isatty(fileno(stderr)) ? true : false;
 #elif defined(OS_WIN)
@@ -137,7 +167,7 @@ inline bool isTerminal(const std::streambuf *osbuf)
 
 
 template <typename T>
-using enable = typename std::enable_if
+using enableStd = typename std::enable_if
 	<
 		std::is_same<T, rang::style>::value ||
 		std::is_same<T, rang::fg>::value ||
@@ -147,14 +177,103 @@ using enable = typename std::enable_if
 		std::ostream&
 	>::type;
 
+#ifdef OS_WIN
+HANDLE getVersionDependentHandle()
+{
+	if (IsWindowsVersionOrGreater(10, 0, 0))
+		return nullptr;
+	return GetStdHandle(STD_OUTPUT_HANDLE);
+}
+
+inline HANDLE getConsoleHandle()
+{
+	static HANDLE h = getVersionDependentHandle();
+	return h;
+}
+
+inline WORD reverseRGB(WORD rgb)
+{
+	static const WORD rev[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
+	return rev[rgb];
+}
+
+inline void setWinAttribute(rang::bg col, WORD& state)
+{
+	state &= 0xFF0F;
+	state |= reverseRGB(static_cast<WORD>(col) - 40) << 4;
+}
+
+inline void setWinAttribute(rang::fg col, WORD& state)
+{
+	state &= 0xFFF0;
+	state |= reverseRGB(static_cast<WORD>(col) - 30);
+}
+
+inline void setWinAttribute(rang::bgB col, WORD& state)
+{
+	state &= 0xFF0F;
+	state |= (0x8 | reverseRGB(static_cast<WORD>(col) - 100)) << 4;
+}
+
+inline void setWinAttribute(rang::fgB col, WORD& state)
+{
+	state &= 0xFFF0;
+	state |= (0x8 | reverseRGB(static_cast<WORD>(col) - 90));
+}
+
+inline WORD& current_state()
+{
+	static WORD state = (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+	return state;
+}
+
 template <typename T>
-inline enable<T> operator<<(std::ostream &os, T const value)
+inline enableStd<T> setColor(std::ostream &os, T const value)
+{
+	HANDLE h = getConsoleHandle();
+	if (h)
+	{
+		setWinAttribute(value, current_state());
+		SetConsoleTextAttribute(h, current_state());
+		return os;
+	}
+	return os << "\033[" << static_cast<int>(value) << "m";
+}
+#else
+template <typename T>
+inline enable<T> setColor(std::ostream &os, T const value)
+{
+	return os << "\033[" << static_cast<int>(value) << "m";
+}
+#endif
+
+template <typename T>
+using enableControl = typename std::enable_if
+	<
+		std::is_same<T, rang::control>::value,
+		std::ostream&
+	>::type;
+
+template <typename T>
+inline enableStd<T> operator<<(std::ostream &os, T const value)
 {
 	std::streambuf const *osbuf = os.rdbuf();
-	return ((supportsColor()) && (isTerminal(osbuf)))
-	  ? os << "\033[" << static_cast<int>(value) << "m"
-	  : os;
+	return (os.iword(getIword()) || ((supportsColor()) && (isTerminal(osbuf))))
+		? setColor(os, value) : os;
 }
+
+template <typename T>
+inline enableControl<T> operator<<(std::ostream &os, T const value)
+{
+	if (value == rang::control::forceColor) {
+		os.iword(getIword()) = 1;
+	} else if (value == rang::control::autoColor) {
+		os.iword(getIword()) = 0;
+	}
+
+	return os;
+}
+
 }
 
 #undef OS_LINUX
