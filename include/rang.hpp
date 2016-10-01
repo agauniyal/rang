@@ -221,6 +221,14 @@ inline void setWinAttribute(rang::fgB col, WORD& state)
 	state |= (0x8 | reverseRGB(static_cast<WORD>(col) - 90));
 }
 
+inline void setWinAttribute(rang::style style, WORD& state)
+{
+	if (style == rang::style::reset)
+	{
+		state = (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+	}
+}
+
 inline WORD& current_state()
 {
 	static WORD state = (FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
