@@ -48,3 +48,30 @@ TEST_CASE("Rang printing to standard output", "[terminal]")
 		REQUIRE(1 == 1);
 	}
 }
+
+TEST_CASE("Rang printing to non-terminals (force color)", "[file]")
+{
+	SECTION("output is to a file (force color)")
+	{
+		std::cout << rang::fg::blue << "to terminal" << rang::style::reset;
+
+		std::ofstream out("out.txt");
+		std::streambuf *coutbuf = std::cout.rdbuf();
+		std::cout.rdbuf(out.rdbuf());
+
+		std::cout << rang::control::forceColor << rang::fg::blue << "to file (force color)" << rang::style::reset << std::endl;
+		std::cout << rang::control::autoColor << rang::fg::blue << "to file (don't force color)" << rang::style::reset;
+
+		std::cout.rdbuf(coutbuf);
+		out.close();
+
+		std::ifstream in("out.txt");
+		std::string output;
+		std::getline(in, output);
+		std::cout << " == " << output;
+		std::getline(in, output);
+		std::cout << " != " << output << std::endl;
+
+		REQUIRE(1 == 1);
+	}
+}
