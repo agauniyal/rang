@@ -27,4 +27,11 @@
 *.out
 *.app
 
+# Intermediate files
 build/
+_builds/
+
+# IDE files
+.vimrc
+.*.swp
+

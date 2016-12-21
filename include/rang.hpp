@@ -26,6 +26,7 @@
 #include <iostream>
 #include <iterator>
 #include <type_traits>
+#include <atomic>
 
 namespace rang {
 
@@ -88,7 +89,13 @@ enum class bgB {
 	gray    = 107
 };
 
-enum class control { autoColor = 0, forceColor = 1 };
+enum class control {
+    autoColor = 0,
+    forceColor = 1,
+    bufferInput = 2,
+    immediateInput = 3,
+    rawInput = 4
+};
 
 
 namespace rang_implementation {
@@ -111,10 +118,10 @@ namespace rang_implementation {
 		return pLogbuff;
 	}
 
-	inline int getIword()
+	inline std::atomic<bool>& isColorEnabled()
 	{
-		static int i = std::ios_base::xalloc();
-		return i;
+        static std::atomic<bool> flag(true);
+		return flag;
 	}
 
 
@@ -268,11 +275,10 @@ inline rang_implementation::enableStd<T> operator<<(
   std::ostream &os, T const value)
 {
 	std::streambuf const *osbuf = os.rdbuf();
-	return (os.iword(rang_implementation::getIword())
-	         || ((rang_implementation::supportsColor())
-	         && (rang_implementation::isTerminal(osbuf))))
-	  ? rang_implementation::setColor(os, value)
-	  : os;
+	return rang_implementation::isColorEnabled() || (
+        rang_implementation::supportsColor() &&
+	    rang_implementation::isTerminal(osbuf)
+    ) ? rang_implementation::setColor(os, value) : os;
 }
 
 template <typename T>
@@ -280,9 +286,9 @@ inline rang_implementation::enableControl<T> operator<<(
   std::ostream &os, T const value)
 {
 	if (value == rang::control::forceColor) {
-		os.iword(rang_implementation::getIword()) = 1;
+        rang_implementation::isColorEnabled() = true;
 	} else if (value == rang::control::autoColor) {
-		os.iword(rang_implementation::getIword()) = 0;
+        rang_implementation::isColorEnabled() = false;
 	}
 	return os;
 }
