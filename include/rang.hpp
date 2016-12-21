@@ -124,6 +124,11 @@ namespace rang_implementation {
 		return flag;
 	}
 
+	inline std::atomic<bool>& isColorSupported()
+	{
+        static std::atomic<bool> flag(false);
+		return flag;
+	}
 
 	inline bool supportsColor()
 	{
@@ -268,6 +273,8 @@ void init()
 	rang_implementation::RANG_coutbuf();
 	rang_implementation::RANG_cerrbuf();
 	rang_implementation::RANG_clogbuf();
+    rang_implementation::isColorSupported() =
+        rang_implementation::supportsColor();
 }
 
 template <typename T>
@@ -276,7 +283,7 @@ inline rang_implementation::enableStd<T> operator<<(
 {
 	std::streambuf const *osbuf = os.rdbuf();
 	return rang_implementation::isColorForced() || (
-        rang_implementation::supportsColor() &&
+        rang_implementation::isColorSupported() &&
 	    rang_implementation::isTerminal(osbuf)
     ) ? rang_implementation::setColor(os, value) : os;
 }
