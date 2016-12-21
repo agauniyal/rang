@@ -118,9 +118,9 @@ namespace rang_implementation {
 		return pLogbuff;
 	}
 
-	inline std::atomic<bool>& isColorEnabled()
+	inline std::atomic<bool>& isColorForced()
 	{
-        static std::atomic<bool> flag(true);
+        static std::atomic<bool> flag(false);
 		return flag;
 	}
 
@@ -275,7 +275,7 @@ inline rang_implementation::enableStd<T> operator<<(
   std::ostream &os, T const value)
 {
 	std::streambuf const *osbuf = os.rdbuf();
-	return rang_implementation::isColorEnabled() || (
+	return rang_implementation::isColorForced() || (
         rang_implementation::supportsColor() &&
 	    rang_implementation::isTerminal(osbuf)
     ) ? rang_implementation::setColor(os, value) : os;
@@ -286,9 +286,9 @@ inline rang_implementation::enableControl<T> operator<<(
   std::ostream &os, T const value)
 {
 	if (value == rang::control::forceColor) {
-        rang_implementation::isColorEnabled() = true;
+        rang_implementation::isColorForced() = true;
 	} else if (value == rang::control::autoColor) {
-        rang_implementation::isColorEnabled() = false;
+        rang_implementation::isColorForced() = false;
 	}
 	return os;
 }

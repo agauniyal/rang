@@ -35,3 +35,6 @@ _builds/
 .vimrc
 .*.swp
 
+# Test output files
+out.txt
+
