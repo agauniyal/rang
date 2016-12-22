@@ -91,10 +91,7 @@ enum class bgB {
 
 enum class control {
     autoColor = 0,
-    forceColor = 1,
-    bufferInput = 2,
-    immediateInput = 3,
-    rawInput = 4
+    forceColor = 1
 };
 
 
@@ -118,13 +115,14 @@ namespace rang_implementation {
 		return pLogbuff;
 	}
 
-	inline std::atomic<bool>& isColorForced()
-	{
-        static std::atomic<bool> flag(false);
-		return flag;
-	}
+#if defined(OS_LINUX) || defined(OS_MAC)
+    inline const char * getTerm() {
+        static const char * term = std::getenv("TERM");
+        return term;
+    }
+#endif
 
-	inline std::atomic<bool>& isColorSupported()
+	inline std::atomic<bool>& isColorForced()
 	{
         static std::atomic<bool> flag(false);
 		return flag;
@@ -138,15 +136,16 @@ namespace rang_implementation {
 			"linux", "msys", "putty", "rxvt", "screen", "vt100", "xterm"
 		};
 
-		const char *env_p = std::getenv("TERM");
-		if (env_p == nullptr) {
-			return false;
-		}
+        static const char * env_p = std::getenv("TERM");
 
-		static const bool result = std::any_of(
-		  std::begin(Terms), std::end(Terms), [&](const char* term) {
-			  return std::strstr(env_p, term) != nullptr;
-		  });
+		static const bool result =
+            env_p == nullptr ? false : std::any_of(
+                std::begin(Terms),
+                std::end(Terms),
+                [](const char* term) {
+			        return std::strstr(env_p, term) != nullptr;
+		        }
+            );
 
 #elif defined(OS_WIN)
 		static constexpr bool result = true;
@@ -273,8 +272,6 @@ void init()
 	rang_implementation::RANG_coutbuf();
 	rang_implementation::RANG_cerrbuf();
 	rang_implementation::RANG_clogbuf();
-    rang_implementation::isColorSupported() =
-        rang_implementation::supportsColor();
 }
 
 template <typename T>
@@ -283,7 +280,7 @@ inline rang_implementation::enableStd<T> operator<<(
 {
 	std::streambuf const *osbuf = os.rdbuf();
 	return rang_implementation::isColorForced() || (
-        rang_implementation::isColorSupported() &&
+        rang_implementation::supportsColor() &&
 	    rang_implementation::isTerminal(osbuf)
     ) ? rang_implementation::setColor(os, value) : os;
 }

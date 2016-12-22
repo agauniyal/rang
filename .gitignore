@@ -33,7 +33,7 @@ _builds/
 
 # IDE files
 .vimrc
-.*.swp
+*.swp
 
 # Test output files
 out.txt
