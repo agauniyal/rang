@@ -115,13 +115,6 @@ namespace rang_implementation {
 		return pLogbuff;
 	}
 
-#if defined(OS_LINUX) || defined(OS_MAC)
-    inline const char * getTerm() {
-        static const char * term = std::getenv("TERM");
-        return term;
-    }
-#endif
-
 	inline std::atomic<bool>& isColorForced()
 	{
         static std::atomic<bool> flag(false);
