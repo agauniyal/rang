@@ -281,6 +281,7 @@ inline rang_implementation::enableStd<T> operator<<(
 			  ? rang_implementation::setColor(os, value)
 			  : os;
 		case 2: return rang_implementation::setColor(os, value);
+		default: return os;
 	}
 }
 
