@@ -38,6 +38,8 @@ if(BUILD_TESTING)
     add_executable(vTest ${PROJECT_SOURCE_DIR}/test/visualTest.cpp)
     add_executable(runTest ${PROJECT_SOURCE_DIR}/test/test.cpp ${CATCH_HEADER_PATH})
     add_executable(allColors ${PROJECT_SOURCE_DIR}/test/colortest.cpp)
+    add_executable(allInput ${PROJECT_SOURCE_DIR}/test/inputtest.cpp
+        ${CATCH_HEADER_PATH})
 
     add_test(RTEST ${CMAKE_BINARY_DIR}/bin/runTest)
 endif()
