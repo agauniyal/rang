@@ -95,7 +95,7 @@ enum class bgB {
 enum class control {
     offColor,
     autoColor,
-    forceColor
+    forceColor,
     blocking,
     nonBlocking,
     flush,
@@ -691,7 +691,7 @@ inline rang_implementation::enableStd<T> operator<<(
     } else if(rang_implementation::isColorForced()) {
         return rang_implementation::setColor(os, value);
     } else if(rang_implementation::supportsColor() &&
-        rang_implementation::isTerminal(osbuf) {
+        rang_implementation::isTerminal(osbuf)) {
         return rang_implementation::setColor(os, value);
     } else {
         return os;
@@ -713,9 +713,6 @@ inline rang_implementation::enableControl<T, std::ostream&> operator<<(
             break;
         case rang::control::offColor:
             rang_implementation::isColorOff() = true;
-            break;
-        default:
-            // Ignore
             break;
         default:
             // Ignore
