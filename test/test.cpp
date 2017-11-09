@@ -1,3 +1,7 @@
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define _WIN32_WINNT 0x0600
+#endif
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 

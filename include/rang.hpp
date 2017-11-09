@@ -16,6 +16,11 @@
 #include <cstring>
 
 #elif defined(OS_WIN)
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#define _WIN32_WINNT 0x0600
+#endif
+
 #include <windows.h>
 #include <io.h>
 #include <VersionHelpers.h>
@@ -134,32 +139,68 @@ namespace rang_implementation {
         return result;
     }
 
+#ifdef OS_WIN
+    inline bool isMsysPty(int fd) noexcept
+    {
+        // Dynamic load for binary compability of old windows
+        decltype(&GetFileInformationByHandleEx) ptrGetFileInformationByHandleEx = nullptr;
+        if(!ptrGetFileInformationByHandleEx)
+        {
+            ptrGetFileInformationByHandleEx = 
+            reinterpret_cast<decltype(&GetFileInformationByHandleEx)>(
+                GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),
+                                "GetFileInformationByHandleEx"));
+            if(!ptrGetFileInformationByHandleEx)
+                return false;
+        }
+        constexpr const DWORD size = sizeof(FILE_NAME_INFO) + sizeof(WCHAR) * (MAX_PATH + 1);
+        char buffer[size];
+        FILE_NAME_INFO *nameinfo = reinterpret_cast<FILE_NAME_INFO*>(&buffer[0]);
+
+        HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
+        if (h == INVALID_HANDLE_VALUE)
+            return false;
+        // Check that it's a pipe:
+        if (GetFileType(h) != FILE_TYPE_PIPE)
+            return false;
+        // Check pipe name is template of {"cygwin-","msys-"}XXXXXXXXXXXXXXX-ptyX-XX
+        if(ptrGetFileInformationByHandleEx(h,FileNameInfo,nameinfo,size-sizeof(WCHAR))) {
+            nameinfo->FileName[nameinfo->FileNameLength / sizeof(WCHAR)] = L'\0';
+            PWSTR name = nameinfo->FileName;
+            if ((!wcsstr(name, L"msys-") && !wcsstr(name, L"cygwin-")) ||
+                 !wcsstr(name, L"-pty"))
+                return false;
+        }
+        return true;
+    }
+#endif
 
     inline bool isTerminal(const std::streambuf *osbuf) noexcept
     {
         using std::cerr;
         using std::clog;
         using std::cout;
-
 #if defined(OS_LINUX) || defined(OS_MAC)
-        auto fn_tty    = isatty;
-        auto fn_fileno = fileno;
+        if (osbuf == cout.rdbuf()) {
+            static bool cout_term = isatty(fileno(stdout)) ? true : false;
+            return cout_term;
+        } else if (osbuf == cerr.rdbuf() || osbuf == clog.rdbuf()) {
+            static bool cerr_term = isatty(fileno(stderr)) ? true : false;
+            return cerr_term;
+        }
 #elif defined(OS_WIN)
-        auto fn_tty    = _isatty;
-        auto fn_fileno = _fileno;
+        if (osbuf == cout.rdbuf()) {
+            static bool cout_term = ( _isatty(_fileno(stdout)) || 
+                                        isMsysPty(_fileno(stdout)) ) ? true : false;
+            return cout_term;
+        } else if (osbuf == cerr.rdbuf() || osbuf == clog.rdbuf()) {
+            static bool cerr_term = ( _isatty(_fileno(stderr)) || 
+                                        isMsysPty(_fileno(stderr)) ) ? true : false;
+            return cerr_term;
+        }
 #endif
-        static const bool result = [&] {
-            if (osbuf == cout.rdbuf()) {
-                return fn_tty(fn_fileno(stdout)) ? true : false;
-            } else if (osbuf == cerr.rdbuf() || osbuf == clog.rdbuf()) {
-                return fn_tty(fn_fileno(stderr)) ? true : false;
-            } else {
-                return false;
-            }
-        }();
-        return result;
+        return false;
     }
-
 
     template <typename T>
     using enableStd = typename std::enable_if<
@@ -198,10 +239,20 @@ namespace rang_implementation {
         }
     }
 
-    inline bool supportsAnsi() noexcept
+    inline bool supportsAnsi(const std::streambuf *osbuf) noexcept
     {
-        static const bool f = setWinTermAnsiColors();
-        return f;
+        using std::cerr;
+        using std::clog;
+        using std::cout;
+        static const bool nativeAnsi = setWinTermAnsiColors();
+        if (osbuf == cout.rdbuf()) {
+            static bool cout_ansi = (isMsysPty(_fileno(stdout)) || nativeAnsi) ? true : false;
+            return cout_ansi;
+        } else if (osbuf == cerr.rdbuf() || osbuf == clog.rdbuf()) {
+            static bool cerr_ansi = (isMsysPty(_fileno(stderr)) || nativeAnsi) ? true : false;
+            return cerr_ansi;
+        }
+        return false;
     }
 
     inline WORD defaultState() noexcept
@@ -269,7 +320,7 @@ namespace rang_implementation {
     template <typename T>
     inline enableStd<T> setColor(std::ostream &os, T const value)
     {
-        if (supportsAnsi()) {
+        if (supportsAnsi(os.rdbuf())) {
             return os << "\033[" << static_cast<int>(value) << "m";
         } else {
             const HANDLE h = getConsoleHandle();
