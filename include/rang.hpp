@@ -23,7 +23,6 @@
 
 #include <windows.h>
 #include <io.h>
-#include <VersionHelpers.h>
 
 // Only defined in windows 10 onwards, redefining in lower windows since it
 // doesn't gets used in lower versions
@@ -223,6 +222,25 @@ namespace rang_implementation {
         }
         return INVALID_HANDLE_VALUE;
     }
+    
+    inline bool isWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+    {
+        OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0,{ 0 }, 0, 0 };
+        DWORDLONG const dwlConditionMask = VerSetConditionMask(
+            VerSetConditionMask(
+                VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+                VER_MINORVERSION,
+                VER_GREATER_EQUAL),
+            VER_SERVICEPACKMAJOR,
+            VER_GREATER_EQUAL
+        );
+
+        osvi.dwMajorVersion = wMajorVersion;
+        osvi.dwMinorVersion = wMinorVersion;
+        osvi.wServicePackMajor = wServicePackMajor;
+
+        return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+    } 
 
     inline bool setWinTermAnsiColors(const std::streambuf *osbuf) noexcept
     {
@@ -230,7 +248,7 @@ namespace rang_implementation {
         if (h == INVALID_HANDLE_VALUE) {
             return false;
         }
-        if (IsWindowsVersionOrGreater(10, 0, 0)) {
+        if (isWindowsVersionOrGreater(10, 0, 0)) {
             DWORD dwMode = 0;
             if (!GetConsoleMode(h, &dwMode)) {
                 return false;
