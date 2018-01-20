@@ -63,9 +63,9 @@ build_script:
   # - cmd: OpenCppCoverage --sources rang/include --input_coverage=.\visualTestReport.bin --input_coverage=.\mainTestReport.bin --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
   # - cmd: ls
   # - cmd: stat overallReport.xml
-  - cmd: OpenCppCoverage --sources rang --export_type=binary:.\visualTestReport.cov -- visualTest.exe
-  - cmd: OpenCppCoverage --sources rang --export_type=binary:.\mainTestReport.cov -- mainTest.exe
-  - cmd: OpenCppCoverage --input_coverage=mainTestReport.cov --input_coverage=visualTestReport.cov --sources rang --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
+  - cmd: OpenCppCoverage --sources rang\include --export_type=binary:.\visualTestReport.cov -- visualTest.exe
+  - cmd: OpenCppCoverage --sources rang\include --export_type=binary:.\mainTestReport.cov -- mainTest.exe
+  - cmd: OpenCppCoverage --input_coverage=mainTestReport.cov --input_coverage=visualTestReport.cov --sources rang\include --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
   # - cmd: OpenCppCoverage --sources rang --excluded_sources test --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
   - cmd: pwd
   - cmd: ls
