@@ -441,18 +441,21 @@ namespace rang_implementation {
     {
         if (isTerminal(os.rdbuf())) {
             if (winTermMode() == winTerm::Auto) {
-                if (supportsAnsi(os.rdbuf()))
+                if (supportsAnsi(os.rdbuf())) {
                     setWinColorAnsi(os, value);
-                else
+                } else {
                     setWinColorNative(os, value);
-            } else if (winTermMode() == winTerm::Ansi)
+                }
+            } else if (winTermMode() == winTerm::Ansi) {
                 setWinColorAnsi(os, value);
-            else
+            } else {
                 setWinColorNative(os, value);
+            }
         } else {
             // force ANSI output to non terminal streams if set
-            if (controlMode() == control::forceColor)
+            if (controlMode() == control::forceColor) {
                 setWinColorAnsi(os, value);
+            }
         }
         return os;
     }

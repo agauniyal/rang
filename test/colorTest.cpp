@@ -3,8 +3,9 @@
 using namespace std;
 using namespace rang;
 
-void test_colors()
+void test_colors(const winTerm opt)
 {
+    setWinTermMode(opt);
 
     // Visual test for background colors
     cout << bg::green << "This text has green background." << bg::reset << endl
@@ -84,14 +85,18 @@ void test_colors()
 
 int main()
 {
-    rang::setControlMode(control::forceColor);  // For appveyor terminal
-    test_colors();
+    setControlMode(control::autoColor);
+    test_colors(winTerm::Auto);
+    test_colors(winTerm::Ansi);
+    test_colors(winTerm::Native);
 
-    rang::setWinTermMode(rang::winTerm::Ansi);
-    test_colors();
+    setControlMode(control::forceColor);
+    test_colors(winTerm::Auto);
+    test_colors(winTerm::Ansi);
+    test_colors(winTerm::Native);
 
-    rang::setWinTermMode(rang::winTerm::Native);
-    test_colors();
-
-    return 0;
+    setControlMode(control::offColor);
+    test_colors(winTerm::Auto);
+    test_colors(winTerm::Ansi);
+    test_colors(winTerm::Native);
 }

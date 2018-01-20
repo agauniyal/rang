@@ -12,11 +12,6 @@
 using namespace std;
 using namespace rang;
 
-/*
-The control::forceColor is used to write to terminal here in order to work
-with appveyor terminal
-*/
-
 TEST_CASE("Rang printing to non-terminals")
 {
     const string s        = "Hello World";
@@ -71,7 +66,7 @@ TEST_CASE("Rang printing to stdout/err")
 
     SUBCASE("output is to terminal")
     {
-        rang::setControlMode(control::forceColor);
+        setControlMode(control::forceColor);
         cout << fg::green << s << "cout" << style::reset << endl;
         clog << fg::blue << s << "clog" << style::reset << endl;
         cerr << fg::red << s << "cerr" << style::reset << endl;
