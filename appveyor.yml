@@ -30,6 +30,7 @@ install:
   - cmd: set OPENCPPPATH="C:\\Program Files\\OpenCppCoverage"
   - cmd: set PATH=C:\glib\bin\;C:\gettext\bin\;C:\pkg_config\bin\;%OPENCPPPATH%;%PATH%
   - cmd: python -m pip install meson conan codecov
+  # - cmd: choco install codecov
 
   - cmd: if %compiler%==msvc2015 ( call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %arch% )
   - cmd: if %compiler%==msvc2017 ( if %arch%==x64 ( call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"))
@@ -63,15 +64,17 @@ build_script:
   # - cmd: OpenCppCoverage --sources rang/include --input_coverage=.\visualTestReport.bin --input_coverage=.\mainTestReport.bin --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
   # - cmd: ls
   # - cmd: stat overallReport.xml
-  - cmd: OpenCppCoverage --sources rang\include --export_type=binary:.\visualTestReport.cov -- visualTest.exe
-  - cmd: OpenCppCoverage --sources rang\include --export_type=binary:.\mainTestReport.cov -- mainTest.exe
-  - cmd: OpenCppCoverage --input_coverage=mainTestReport.cov --input_coverage=visualTestReport.cov --sources rang\include --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
+  - cmd: OpenCppCoverage --sources C:\projects\rang\include --export_type=binary:visualTestReport.bin -- visualTest.exe
+  - cmd: OpenCppCoverage --sources C:\projects\rang\include --export_type=binary:mainTestReport.bin -- mainTest.exe
+  - cmd: OpenCppCoverage --sources C:\projects\rang\include --export_type=binary:colorTestReport.bin -- colorTest.exe
+  - cmd: OpenCppCoverage --sources C:\projects\rang\include --export_type=cobertura:overallReport.xml --input_coverage=mainTestReport.bin --input_coverage=visualTestReport.bin --input_coverage=colorTestReport.bin
   # - cmd: OpenCppCoverage --sources rang --excluded_sources test --export_type=html:. --export_type=cobertura:.\overallReport.xml -- colorTest.exe
   - cmd: pwd
   - cmd: ls
   - cmd: ls ..
   # - cmd: ls ../include/
   - cmd: cat LastCoverageResults.log
-  - cmd: cat index.html
+  # - cmd: cat index.html
   - cmd: cat overallReport.xml
-  - cmd: codecov --file overallReport.xml
+  - cmd: pwd
+  - cmd: codecov --root ../.. --no-color --disable gcov -f overallReport.xml

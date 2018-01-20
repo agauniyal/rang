@@ -10,10 +10,4 @@ int main()
          << style::reset << bg::green << fg::gray
          << "If you're seeing green background, then rang works!"
          << style::reset << endl;
-
-    rang::setControlMode(control::autoColor);  // For appveyor terminal
-    cout << endl
-         << style::reset << bg::green << fg::gray
-         << "If you're seeing green background, then rang works!"
-         << style::reset << endl;
 }
