@@ -18,6 +18,7 @@ class RangConan(ConanFile):
 
     def package(self):
         self.copy("*.hpp")
+        self.copy(pattern="LICENSE", dst="licenses", keep_path=False)
 
     def package_id(self):
         self.info.header_only()
