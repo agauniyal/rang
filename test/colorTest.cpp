@@ -1,5 +1,8 @@
 #include "rang.hpp"
 #include <string>
+#include <iostream>
+#include <ctime>
+#include <windows.h>//to use Sleep function.
 
 using namespace std;
 using namespace rang;
@@ -9,6 +12,51 @@ void printHeading(const string &heading)
     cout << '\n'
          << style::reset << heading << style::reset << bg::reset << fg::reset
          << endl;
+}
+
+void upLinePrompt(int count)
+{
+	for (int i = 0; i < count; ++i) {
+		//printf("%c[2K",27);
+		cout << "\33[2K"; //line clear
+		cout << "\x1b[A"; //up line (ESC [ A) must be support VT100 escape seq
+	}
+}
+
+void twinkle_colors(ostream &os, const winTerm opt)
+{
+	setWinTermMode(opt);
+	printHeading("twinkle colors Test:");
+	int a = 0;
+	srand((unsigned int)time(0));
+	int counter = 0;
+	while (counter < 10)
+	{
+		a = rand() % 7 + 1;
+		//system("cls");//화면을 지움.
+		
+		switch (a)
+		{
+		case 1:
+			os << fg::green << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		case 2:
+			os << fg::red << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break; 
+		case 3:
+			os << fg::black << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		case 4:
+			os << fg::yellow << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		case 5:
+			os << fg::blue << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		case 6:
+			os << fg::magenta << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		case 7:
+			os << fg::cyan << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		default:
+			os << fg::gray << "random" << fg::reset << endl; Sleep(100); upLinePrompt(1); break;
+		}
+		Sleep(100);
+		counter++;
+	}
 }
 
 void test_colors(ostream &os, const winTerm opt)
@@ -101,6 +149,17 @@ void enumerateWinTerms()
     test_colors(clog, winTerm::Native);
     test_colors(cerr, winTerm::Native);
     cout << "-------------------------------------------------------------\n\n";
+    
+    cout << endl;
+	cout << "_________________________________________________________________";
+	cout << "\n\n"
+		<< style::reset << style::bold << "twinkle_color!!"
+		<< style::reset << bg::reset << fg::reset << '\n';
+	cout << "_________________________________________________________________";
+	twinkle_colors(cout, winTerm::Ansi);
+	twinkle_colors(clog, winTerm::Ansi);
+	twinkle_colors(cerr, winTerm::Ansi);
+	cout << "-------------------------------------------------------------\n\n";
 }
 
 int main()
