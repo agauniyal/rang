@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 #include <ctime>
-#include <windows.h>//to use Sleep function.
+#include <windows.h>
 
 using namespace std;
 using namespace rang;
@@ -17,9 +17,8 @@ void printHeading(const string &heading)
 void upLinePrompt(int count)
 {
 	for (int i = 0; i < count; ++i) {
-		//printf("%c[2K",27);
-		cout << "\33[2K"; //line clear
-		cout << "\x1b[A"; //up line (ESC [ A) must be support VT100 escape seq
+		cout << "\33[2K"; 
+		cout << "\x1b[A"; 
 	}
 }
 
@@ -33,7 +32,6 @@ void twinkle_colors(ostream &os, const winTerm opt)
 	while (counter < 10)
 	{
 		a = rand() % 7 + 1;
-		//system("cls");//화면을 지움.
 		
 		switch (a)
 		{
