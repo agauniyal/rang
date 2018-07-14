@@ -459,11 +459,6 @@ namespace rang_implementation {
                 break;
             case rang::style::reversed: state.inverse = TRUE; break;
             case rang::style::conceal: state.conceal = TRUE; break;
-
-            case rang::style::crossed:
-            case rang::style::dim:
-            case rang::style::italic:
-            case rang::style::rblink:            
             default: break;
         }
     }
@@ -696,8 +691,6 @@ operator<<(std::basic_ostream<CharT, Traits> &os, const T &value)
             return isSupportedTerm() && isTTY(os.rdbuf()) ? setColor(os, value)
                                                           : os;
         case control::Force: return setColor(os, value);
-
-        case control::Off:
         default: return os;
     }
 }
