@@ -210,8 +210,8 @@ namespace rang_implementation {
         // Dynamic load for binary compability with old Windows
         const auto ptrGetFileInformationByHandleEx
           = reinterpret_cast<decltype(&GetFileInformationByHandleEx)>(
-            GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),
-                           "GetFileInformationByHandleEx"));
+               reinterpret_cast< void *>(GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),
+                  "GetFileInformationByHandleEx")));
         if (!ptrGetFileInformationByHandleEx) {
             return false;
         }
