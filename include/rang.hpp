@@ -544,6 +544,7 @@ class RangBuffer
     RangBuffer& operator=(const RangBuffer& rg) = default;
     RangBuffer& operator=(RangBuffer&& rg) = default;
 
+    // setter helper functions
     void setStyle(const rang::style s)
     {
         style = s;
@@ -574,10 +575,41 @@ class RangBuffer
         elementSet[4] = true;
     }
 
-    void clear()
+    //reset the object as if it was new
+    std::ostream& reset(std::ostream& os)
     {
-        for(size_t i = 0;i < elementSet.size();++i)
-            elementSet[i] = false;
+        for(size_t i = 0;i < this.elementSet.size();++i)
+            this.elementSet.set(i, false);
+
+        os << rang::style::reset;
+
+        return os;
+    }
+
+    /**
+        an interesting function. This resets the terminal. but keeps the settings of this object as is. It is meant to be used like this:
+
+        RangBuffer rg;
+
+        rg.setBgColor(rang::bg::cyan);
+        rg.setFgBColor(rang::fgB::yellow);
+
+        //displayed with cyan background and bright yellow foreground
+        cout << rg << "hello world\n" << endl;
+
+        rg.ignoreMySettings(cout);
+
+        //displayed with the default foregrouond and background
+        cout << "hello world\n";
+
+        //displayed as the first hello world
+        cout << rg << "This is my first contribution";
+    */
+
+    std::ostream& ignoreMySettings(std::ostream& os)
+    {
+        os << "\033[0m";
+        return os;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const RangBuffer& r)
@@ -608,3 +640,4 @@ class RangBuffer
 #undef OS_MAC
 
 #endif /* ifndef RANG_DOT_HPP */
+
