@@ -578,8 +578,8 @@ class RangBuffer
     //reset the object as if it was new
     std::ostream& reset(std::ostream& os)
     {
-        for(size_t i = 0;i < this.elementSet.size();++i)
-            this.elementSet.set(i, false);
+        for(size_t i = 0;i < this->elementSet.size();++i)
+            this->elementSet.set(i, false);
 
         os << rang::style::reset;
 
@@ -605,7 +605,6 @@ class RangBuffer
         //displayed as the first hello world
         cout << rg << "This is my first contribution";
     */
-
     std::ostream& ignoreMySettings(std::ostream& os)
     {
         os << "\033[0m";
@@ -640,4 +639,3 @@ class RangBuffer
 #undef OS_MAC
 
 #endif /* ifndef RANG_DOT_HPP */
-
