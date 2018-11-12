@@ -516,35 +516,35 @@ public:
     buffer& operator=(const buffer& b) = default;
     buffer& operator=(buffer&& b) = default;
 
-    void style(rang::style s)
+    void style(const rang::style s)
     {
         std::stringstream ss;
         ss << "\033[" << static_cast<int>(s) << "m";
         m_finalColor += ss.str();
     }
 
-    void bg(rang::bg b)
+    void bg(const rang::bg b)
     {
         std::stringstream ss;
         ss << "\033[" << static_cast<int>(b) << "m";
         m_finalColor += ss.str();
     }
 
-    void bgB(rang::bgB b)
+    void bgB(const rang::bgB b)
     {
         std::stringstream ss;
         ss << "\033[" << static_cast<int>(b) << "m";
         m_finalColor += ss.str();
     }
 
-    void fg(rang::fg f)
+    void fg(const rang::fg f)
     {
         std::stringstream ss;
         ss << "\033[" << static_cast<int>(f) << "m";
         m_finalColor += ss.str();
     }
 
-    void fgB(rang::fgB f)
+    void fgB(const rang::fgB f)
     {
         std::stringstream ss;
         ss << "\033[" << static_cast<int>(f) << "m";
@@ -609,4 +609,3 @@ public:
 #undef OS_MAC
 
 #endif /* ifndef RANG_DOT_HPP */
-
