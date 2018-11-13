@@ -499,7 +499,7 @@ class buffer
 {
 private:
 
-    std::string m_finalColor = "";
+    std::stringstream m_finalColor;
 public:
 
     /**
@@ -518,37 +518,28 @@ public:
 
     void style(const rang::style s)
     {
-        std::stringstream ss;
-        ss << "\033[" << static_cast<int>(s) << "m";
-        m_finalColor += ss.str();
+        m_finalColor << "\033[" << static_cast<int>(s) << "m";
+
     }
 
     void bg(const rang::bg b)
     {
-        std::stringstream ss;
-        ss << "\033[" << static_cast<int>(b) << "m";
-        m_finalColor += ss.str();
+        m_finalColor << "\033[" << static_cast<int>(b) << "m";
     }
 
     void bgB(const rang::bgB b)
     {
-        std::stringstream ss;
-        ss << "\033[" << static_cast<int>(b) << "m";
-        m_finalColor += ss.str();
+        m_finalColor << "\033[" << static_cast<int>(b) << "m";
     }
 
     void fg(const rang::fg f)
     {
-        std::stringstream ss;
-        ss << "\033[" << static_cast<int>(f) << "m";
-        m_finalColor += ss.str();
+        m_finalColor << "\033[" << static_cast<int>(f) << "m";
     }
 
     void fgB(const rang::fgB f)
     {
-        std::stringstream ss;
-        ss << "\033[" << static_cast<int>(f) << "m";
-        m_finalColor += ss.str();
+        m_finalColor << "\033[" << static_cast<int>(f) << "m";
     }
 
     friend std::ostream& operator<<(std::ostream& os, const buffer& b)
@@ -556,7 +547,7 @@ public:
         //an extra precaution that someone does not call operator << just after clearing the buffer.
         //Though, it does not cause any harm, I don't want to take a chance
 
-        if (b.m_finalColor != "")
+        if (!b.m_finalColor.str().empty())
             os << b.m_finalColor;
 
         return os;
@@ -581,6 +572,7 @@ public:
         //displayed as the first hello world
         cout << rg << "This is my first contribution";
     */
+
     std::ostream& ingore(std::ostream& os)
     {
         os << rang::style::reset;
@@ -590,13 +582,13 @@ public:
     //resets the buffer
     void reset()
     {
-        m_finalColor = "";
+        m_finalColor.str(std::string());
     }
 
     //resets the buffer as well as ostream
     std::ostream& reset(std::ostream& os)
     {
-        m_finalColor = "";
+        m_finalColor.str(std::string());
         os << rang::style::reset;
         return os;
     }
@@ -609,3 +601,4 @@ public:
 #undef OS_MAC
 
 #endif /* ifndef RANG_DOT_HPP */
+
