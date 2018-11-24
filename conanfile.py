@@ -10,6 +10,7 @@ class RangConan(ConanFile):
     generators = "pkg_config"
     build_requires = "doctest/1.2.6@bincrafters/stable"
     exports_sources = "*"
+    settings = "build_type"
 
     def build(self):
         meson = Meson(self)
