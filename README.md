@@ -1,4 +1,6 @@
-# rang [![Build Status](https://travis-ci.org/agauniyal/rang.svg?branch=master)](https://travis-ci.org/agauniyal/rang) [![Build status](https://ci.appveyor.com/api/projects/status/jqpdoelli38h2a7w?svg=true)](https://ci.appveyor.com/project/agauniyal/rang) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang) [ ![Download](https://api.bintray.com/packages/agauniyal/rang/rang%3Arang/images/download.svg) ](https://bintray.com/agauniyal/rang/rang%3Arang/_latestVersion)
+# rang [![wercker status](https://app.wercker.com/status/58b65d3b469ae164da8c741c81a2d7fd/s/master "wercker status")](https://app.wercker.com/project/byKey/58b65d3b469ae164da8c741c81a2d7fd) [![Build status](https://ci.appveyor.com/api/projects/status/jqpdoelli38h2a7w?svg=true)](https://ci.appveyor.com/project/agauniyal/rang) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang) [ ![Download](https://api.bintray.com/packages/agauniyal/rang/rang%3Arang/images/download.svg) ](https://bintray.com/agauniyal/rang/rang%3Arang/_latestVersion)  [![Open Source Helpers](https://www.codetriage.com/agauniyal/rang/badges/users.svg)](https://www.codetriage.com/agauniyal/rang)
+
+[![wercker status](https://app.wercker.com/status/58b65d3b469ae164da8c741c81a2d7fd/m/ "wercker status")](https://app.wercker.com/project/byKey/58b65d3b469ae164da8c741c81a2d7fd)
 
 ##### Colors for your Terminal.
 

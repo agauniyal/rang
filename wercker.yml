@@ -1,0 +1,737 @@
+box: ubuntu
+
+
+build-start:
+    steps:
+        - script:
+          name: report system
+          code: |
+              cat /proc/version
+              cat /etc/*release
+
+
+build-gcc-default:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+
+        - script:
+          name: install gcc
+          code: |
+              apt-get -y install build-essential gcc g++
+              gcc --version
+              g++ --version
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip lcov
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+              meson configure -Dbuildtype=debug
+              meson configure -Dwarning_level=3
+              meson configure -Db_coverage=true
+              ninja
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+
+        - script:
+          name: generate coverage
+          code: |
+              cd build
+              ninja coverage-html
+
+        - script:
+          name: upload coverage
+          code: |
+              cd build
+              bash <(curl -s https://codecov.io/bash)
+              cd .. && rm -rf build
+
+
+build-clang-default:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+
+
+        - script:
+          name: install clang
+          code: |
+              apt-get -y install build-essential clang
+              clang --version
+              clang++ --version
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              export CC=clang
+              export CXX=clang++
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+              meson configure -Dbuildtype=debug
+              meson configure -Dwarning_level=3
+              meson configure -Db_coverage=true
+              ninja
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-gcc-5:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common
+              add-apt-repository ppa:ubuntu-toolchain-r/test -y
+              apt-get -yq update
+
+        - script:
+          name: install gcc 5
+          code: |
+              apt-get -y install gcc-5 g++-5
+              update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 100
+              update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 100
+              apt-get -y install build-essential
+              update-alternatives --config gcc
+              update-alternatives --config g++
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-gcc-6:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common
+              add-apt-repository ppa:ubuntu-toolchain-r/test -y
+              apt-get -yq update
+
+        - script:
+          name: install gcc 6
+          code: |
+              apt-get -y install gcc-6 g++-6
+              update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 100
+              update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
+              apt-get -y install build-essential
+              update-alternatives --config gcc
+              update-alternatives --config g++
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-gcc-7:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common
+              add-apt-repository ppa:ubuntu-toolchain-r/test -y
+              apt-get -yq update
+
+        - script:
+          name: install gcc 7
+          code: |
+              apt-get -y install gcc-7 g++-7
+              update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
+              update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
+              apt-get -y install build-essential
+              update-alternatives --config gcc
+              update-alternatives --config g++
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-clang-4:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common wget
+              wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+              apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-4.0 main"
+              apt-get -yq update
+
+        - script:
+          name: install clang
+          code: |
+              apt-get -y install build-essential clang-4.0
+              clang-4.0 --version
+              clang++-4.0 --version
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              export CC=clang-4.0
+              export CXX=clang++-4.0
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-clang-5:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common wget
+              wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+              apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
+              apt-get -yq update
+
+
+        - script:
+          name: install clang
+          code: |
+              apt-get -y install build-essential clang-5.0
+              clang-5.0 --version
+              clang++-5.0 --version
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              export CC=clang-5.0
+              export CXX=clang++-5.0
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+              cd .. && rm -rf build
+
+
+build-sanitizers:
+    steps:
+        - script:
+          name: update system
+          code: |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get -yq update
+              apt-get install locales
+              export LANGUAGE=en_US.UTF-8
+              export LANG=en_US.UTF-8
+              export LC_ALL=en_US.UTF-8
+              locale-gen en_US.UTF-8
+              dpkg-reconfigure locales
+              apt-get install -yq software-properties-common wget
+              wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+              apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main"
+              apt-get -yq update
+
+
+        - script:
+          name: install clang
+          code: |
+              apt-get -y install build-essential clang-5.0
+              clang-5.0 --version
+              clang++-5.0 --version
+
+        - script:
+          name: install meson and ninja dependencies
+          code: |
+              apt-get -y install git python3-pip pkg-config wget unzip
+
+        - script:
+          name: install meson
+          code: |
+              pip3 install meson
+              meson --version
+
+        - script:
+          name: install ninja build
+          code: |
+              wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+              unzip ninja-linux.zip
+              cp ninja /usr/bin/ninja
+              rm ninja-linux.zip
+              rm ninja
+              ninja --version
+
+        - script:
+          name: install conan
+          code: |
+              pip3 install conan
+              conan --version
+
+        - script:
+          name: build project
+          code: |
+              export CC=clang-5.0
+              export CXX=clang++-5.0
+              mkdir build && cd build
+              conan install ..
+              conan build ..
+              meson configure -Dbuildtype=release
+              meson configure -Dwarning_level=3
+              meson configure -Db_sanitize="address,undefined"
+
+        - script:
+          name: Test_mainTest
+          code: |
+              cd build
+              ./test/mainTest
+
+        - script:
+          name: Test_colorTest
+          code: |
+              cd build
+              ./test/colorTest
+
+        - script:
+          name: Test_envTermMissing
+          code: |
+              cd build
+              ./test/envTermMissing
+
+        - script:
+          name: Test_cursorTest
+          code: |
+              cd build
+              ./test/cursorTest
+
+        - script:
+          name: Run cppcheck
+          code: |
+              - script:
+          name: install cppcheck
+          code: |
+              wget https://github.com/danmar/cppcheck/archive/1.82.zip
+              unzip -q 1.82.zip
+              cd cppcheck-1.82/
+              make SRCDIR=build CFGDIR=cfg CXXFLAGS="-O1 -DNDEBUG" -j4
+              cd ..
+              export PATH="`pwd`/cppcheck-1.82/:${PATH}"
+              cd build
+              ninja cppcheck
+              cd .. && rm -rf build

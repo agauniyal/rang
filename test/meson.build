@@ -7,3 +7,6 @@ test('colorTest', colorTest)
 
 envTermMissing = executable('envTermMissing', 'envTermMissing.cpp', include_directories : inc)
 test('envTermMissing', envTermMissing)
+
+cursorTest = executable('cursorTest', 'cursorTest.cpp', include_directories : inc)
+test('cursorTest', cursorTest)

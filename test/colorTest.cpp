@@ -11,7 +11,8 @@ void printHeading(const string &heading)
          << endl;
 }
 
-void test_colors(ostream &os, const winTerm opt)
+template <typename CharT, typename Traits>
+void test_colors(std::basic_ostream<CharT, Traits> &os, const winTerm opt)
 {
     setWinTermMode(opt);
 
