@@ -526,7 +526,10 @@ public:
         2) It will add a utility if the user wants to play around
     */
 
-    buffer() = default;
+    buffer()
+    {
+        this->reset();
+    }
 
     buffer(const buffer &b) = default;
     buffer(buffer &&b)      = default;
@@ -534,15 +537,15 @@ public:
     buffer &operator=(const buffer &b) = default;
     buffer &operator=(buffer &&b) = default;
 
-    void style(const rang::style s) { textStyle = s; }
+    void Style(const rang::style s) { textStyle = s; }
 
-    void bg(const rang::bg b) { background = b; }
+    void Bg(const rang::bg b) { background = b; }
 
-    void bgB(const rang::bgB b) { backgroundBright = b; }
+    void BgB(const rang::bgB b) { backgroundBright = b; }
 
-    void fg(const rang::fg f) { foreground = f; }
+    void Fg(const rang::fg f) { foreground = f; }
 
-    void fgB(const rang::fgB f) { foregroundBright = f; }
+    void FgB(const rang::fgB f) { foregroundBright = f; }
 
     friend std::ostream &operator<<(std::ostream &os, const buffer &b);
     /**
