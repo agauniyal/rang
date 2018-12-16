@@ -41,8 +41,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <string>
-#include <sstream>
 
 namespace rang {
 
@@ -50,6 +48,13 @@ namespace rang {
  * except of reset, bold and reversed.
  * Note that on Windows terminals bold style is same as fgB color.
  */
+
+/**
+    There exists a Null in every enum. It is intended for internal use. DO NOT
+   USE IT TO PRINT SOMETHING ON THE SCREEN. YOU ARE RESPONSIBLE FOR SHOOTING
+   YOUR OWN FOOT.
+*/
+
 enum class style {
     reset     = 0,
     bold      = 1,
@@ -60,7 +65,9 @@ enum class style {
     rblink    = 6,
     reversed  = 7,
     conceal   = 8,
-    crossed   = 9
+    crossed   = 9,
+
+    Null = -1
 };
 
 enum class fg {
@@ -72,7 +79,9 @@ enum class fg {
     magenta = 35,
     cyan    = 36,
     gray    = 37,
-    reset   = 39
+    reset   = 39,
+
+    Null = -1
 };
 
 enum class bg {
@@ -84,7 +93,9 @@ enum class bg {
     magenta = 45,
     cyan    = 46,
     gray    = 47,
-    reset   = 49
+    reset   = 49,
+
+    Null = -1
 };
 
 enum class fgB {
@@ -95,7 +106,9 @@ enum class fgB {
     blue    = 94,
     magenta = 95,
     cyan    = 96,
-    gray    = 97
+    gray    = 97,
+
+    Null = -1
 };
 
 enum class bgB {
@@ -106,7 +119,9 @@ enum class bgB {
     blue    = 104,
     magenta = 105,
     cyan    = 106,
-    gray    = 107
+    gray    = 107,
+
+    Null = -1
 };
 
 enum class control {  // Behaviour of rang function calls
@@ -208,7 +223,8 @@ namespace rang_implementation {
                                              sizeof(MY_FILE_NAME_INFO))) {
             return false;
         }
-        std::wstring name(pNameInfo->FileName, pNameInfo->FileNameLength / sizeof(WCHAR));
+        std::wstring name(pNameInfo->FileName,
+                          pNameInfo->FileNameLength / sizeof(WCHAR));
         if ((name.find(L"msys-") == std::wstring::npos
              && name.find(L"cygwin-") == std::wstring::npos)
             || name.find(L"-pty") == std::wstring::npos) {
@@ -495,13 +511,15 @@ inline void setControlMode(const control value) noexcept
     rang_implementation::controlMode() = value;
 }
 
-class buffer
-{
+class buffer {
 private:
+    bg background;
+    bgB backgroundBright;
+    fg foreground;
+    fgB foregroundBright;
+    style textStyle;
 
-    std::stringstream m_finalColor;
 public:
-
     /**
     ask the compiler to make the default contructors because
         1) The compiler is much better
@@ -510,51 +528,26 @@ public:
 
     buffer() = default;
 
-    buffer(const buffer& b) = default;
-    buffer(buffer&& b) = default;
+    buffer(const buffer &b) = default;
+    buffer(buffer &&b)      = default;
 
-    buffer& operator=(const buffer& b) = default;
-    buffer& operator=(buffer&& b) = default;
+    buffer &operator=(const buffer &b) = default;
+    buffer &operator=(buffer &&b) = default;
 
-    void style(const rang::style s)
-    {
-        m_finalColor << "\033[" << static_cast<int>(s) << "m";
+    void style(const rang::style s) { textStyle = s; }
 
-    }
+    void bg(const rang::bg b) { background = b; }
 
-    void bg(const rang::bg b)
-    {
-        m_finalColor << "\033[" << static_cast<int>(b) << "m";
-    }
+    void bgB(const rang::bgB b) { backgroundBright = b; }
 
-    void bgB(const rang::bgB b)
-    {
-        m_finalColor << "\033[" << static_cast<int>(b) << "m";
-    }
+    void fg(const rang::fg f) { foreground = f; }
 
-    void fg(const rang::fg f)
-    {
-        m_finalColor << "\033[" << static_cast<int>(f) << "m";
-    }
+    void fgB(const rang::fgB f) { foregroundBright = f; }
 
-    void fgB(const rang::fgB f)
-    {
-        m_finalColor << "\033[" << static_cast<int>(f) << "m";
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const buffer& b)
-    {
-        //an extra precaution that someone does not call operator << just after clearing the buffer.
-        //Though, it does not cause any harm, I don't want to take a chance
-
-        if (!b.m_finalColor.str().empty())
-            os << b.m_finalColor;
-
-        return os;
-    }
-
+    friend std::ostream &operator<<(std::ostream &os, const buffer &b);
     /**
-        This resets the terminal. but keeps the settings of this object as is. It is meant to be used like this:
+        This resets the terminal. but keeps the settings of this object as is.
+       It is meant to be used like this:
 
         RangBuffer rg;
 
@@ -573,26 +566,63 @@ public:
         cout << rg << "This is my first contribution";
     */
 
-    std::ostream& ingore(std::ostream& os)
+    std::ostream &ingore(std::ostream &os)
     {
         os << rang::style::reset;
         return os;
     }
 
-    //resets the buffer
+    // resets the buffer
     void reset()
     {
-        m_finalColor.str(std::string());
+        textStyle        = style::Null;
+        background       = bg::Null;
+        backgroundBright = bgB::Null;
+        foreground       = fg::Null;
+        foregroundBright = fgB::Null;
     }
 
-    //resets the buffer as well as ostream
-    std::ostream& reset(std::ostream& os)
+    // resets the buffer as well as ostream
+    std::ostream &reset(std::ostream &os)
     {
-        m_finalColor.str(std::string());
+        this->reset();
         os << rang::style::reset;
         return os;
     }
 };
+
+std::ostream &operator<<(std::ostream &os, const buffer &b)
+{
+    const control option = rang_implementation::controlMode();
+
+    auto display = [&]() {
+        if (b.textStyle != style::Null) os << b.textStyle;
+
+        if (b.background != bg::Null) os << b.background;
+
+        if (b.backgroundBright != bgB::Null) os << b.backgroundBright;
+
+        if (b.foreground != fg::Null) os << b.foreground;
+
+        if (b.foregroundBright != fgB::Null) os << b.foregroundBright;
+    };
+
+    switch (option) {
+
+        case control::Auto:
+            if (rang_implementation::supportsColor()
+                && rang_implementation::isTerminal(os.rdbuf())) {
+                display();
+
+                return os;
+            } else
+                return os;
+
+        case control::Force: display(); return os;
+
+        default: return os;
+    }
+}
 
 }  // namespace rang
 
@@ -601,4 +631,3 @@ public:
 #undef OS_MAC
 
 #endif /* ifndef RANG_DOT_HPP */
-
