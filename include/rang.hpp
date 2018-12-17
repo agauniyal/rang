@@ -520,16 +520,14 @@ private:
     style textStyle;
 
 public:
+    
+    buffer() { this->reset(); }
+
     /**
     ask the compiler to make the default contructors because
         1) The compiler is much better
         2) It will add a utility if the user wants to play around
     */
-
-    buffer()
-    {
-        this->reset();
-    }
 
     buffer(const buffer &b) = default;
     buffer(buffer &&b)      = default;
