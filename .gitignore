@@ -29,3 +29,6 @@
 
 build/
 .vscode/
+
+# Some visual studio specific
+.vs
