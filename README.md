@@ -51,7 +51,7 @@ Or, if you use the [conan package manager](https://www.conan.io/), follow these 
 
 ## How to use
 
-*Rang* uses iostream objects - `cout`/`clog`/`cerr` to apply attributes to output text. Since *rang* aims to support both windows and unix like systems, it takes care of the os specific details and tries to provide a uniform interface. Due to incompatiblities b/w different OS versions, not all kinds of attributes are supported on every system so rang will try to skip the ones which might produce garbage(instead of pushing random ANSI escape codes on your streams). Detection of tty is also handled internally so you don't need to check if application user might redirect output to a file.
+*Rang* uses iostream objects - `cout`/`clog`/`cerr` to apply attributes to output text. Since *rang* aims to support both windows and unix like systems, it takes care of the os specific details and tries to provide a uniform interface. Due to incompatiblities between different OS versions, not all kinds of attributes are supported on every system so rang will try to skip the ones which might produce garbage(instead of pushing random ANSI escape codes on your streams). Detection of tty is also handled internally so you don't need to check if application user might redirect output to a file.
 
 > **Need support for non-ansi terminals? Check out [Termdb](https://github.com/agauniyal/termdb) which supports virtually all terminals and their capablities.**
 
