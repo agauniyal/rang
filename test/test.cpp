@@ -5,9 +5,6 @@
 #include <fstream>
 #include <string>
 
-using namespace std;
-using namespace rang;
-
 #if defined(__unix__) || defined(__unix) || defined(__linux__)
 #define OS_LINUX
 #elif defined(WIN32) || defined(_WIN32) || defined(_WIN64)
@@ -21,60 +18,61 @@ using namespace rang;
 
 TEST_CASE("Rang printing with control::Off and cout")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Off);
+    rang::setControlMode(control::Off);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *coutbuf = cout.rdbuf();
-        cout.rdbuf(out.rdbuf());
-        cout << fg::blue << s << style::reset;
-        cout.rdbuf(coutbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(out.rdbuf());
+        std::cout << fg::blue << s << style::reset;
+        std::cout.rdbuf(coutbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Auto")
     {
-        setWinTermMode(winTerm::Auto);
+        rang::setWinTermMode(winTerm::Auto);
 
-        ofstream out(fileName);
-        streambuf *coutbuf = cout.rdbuf();
-        cout.rdbuf(out.rdbuf());
-        cout << fg::blue << s << style::reset;
-        cout.rdbuf(coutbuf);
+        std::ofstream out(fileName);
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(out.rdbuf());
+        std::cout << fg::blue << s << style::reset;
+        std::cout.rdbuf(coutbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *coutbuf = cout.rdbuf();
-        cout.rdbuf(out.rdbuf());
-        cout << fg::blue << s << style::reset;
-        cout.rdbuf(coutbuf);
+        std::ofstream out(fileName);
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(out.rdbuf());
+        std::cout << fg::blue << s << style::reset;
+        std::cout.rdbuf(coutbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
@@ -82,24 +80,25 @@ TEST_CASE("Rang printing with control::Off and cout")
 
 TEST_CASE("Rang printing with control::Force and cout")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Force);
+    rang::setControlMode(control::Force);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *coutbuf = cout.rdbuf();
-        cout.rdbuf(out.rdbuf());
-        cout << fg::blue << s << style::reset;
-        cout.rdbuf(coutbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(out.rdbuf());
+        std::cout << fg::blue << s << style::reset;
+        std::cout.rdbuf(coutbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
 #if defined(OS_LINUX) || defined(OS_MAC)
         REQUIRE(s != output);
@@ -111,18 +110,18 @@ TEST_CASE("Rang printing with control::Force and cout")
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *coutbuf = cout.rdbuf();
-        cout.rdbuf(out.rdbuf());
-        cout << fg::blue << s << style::reset;
-        cout.rdbuf(coutbuf);
+        std::ofstream out(fileName);
+        std::streambuf *coutbuf = std::cout.rdbuf();
+        std::cout.rdbuf(out.rdbuf());
+        std::cout << fg::blue << s << style::reset;
+        std::cout.rdbuf(coutbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s != output);
         REQUIRE(s.size() < output.size());
@@ -131,60 +130,61 @@ TEST_CASE("Rang printing with control::Force and cout")
 
 TEST_CASE("Rang printing with control::Off and cerr")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Off);
+    rang::setControlMode(control::Off);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *cerrbuf = cerr.rdbuf();
-        cerr.rdbuf(out.rdbuf());
-        cerr << fg::blue << s << style::reset;
-        cerr.rdbuf(cerrbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *cerrbuf = std::cerr.rdbuf();
+        std::cerr.rdbuf(out.rdbuf());
+        std::cerr << fg::blue << s << style::reset;
+        std::cerr.rdbuf(cerrbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Auto")
     {
-        setWinTermMode(winTerm::Auto);
+        rang::setWinTermMode(winTerm::Auto);
 
-        ofstream out(fileName);
-        streambuf *cerrbuf = cerr.rdbuf();
-        cerr.rdbuf(out.rdbuf());
-        cerr << fg::blue << s << style::reset;
-        cerr.rdbuf(cerrbuf);
+        std::ofstream out(fileName);
+        std::streambuf *cerrbuf = std::cerr.rdbuf();
+        std::cerr.rdbuf(out.rdbuf());
+        std::cerr << fg::blue << s << style::reset;
+        std::cerr.rdbuf(cerrbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *cerrbuf = cerr.rdbuf();
-        cerr.rdbuf(out.rdbuf());
-        cerr << fg::blue << s << style::reset;
-        cerr.rdbuf(cerrbuf);
+        std::ofstream out(fileName);
+        std::streambuf *cerrbuf = std::cerr.rdbuf();
+        std::cerr.rdbuf(out.rdbuf());
+        std::cerr << fg::blue << s << style::reset;
+        std::cerr.rdbuf(cerrbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
@@ -192,24 +192,25 @@ TEST_CASE("Rang printing with control::Off and cerr")
 
 TEST_CASE("Rang printing with control::Force and cerr")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Force);
+    rang::setControlMode(control::Force);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *cerrbuf = cerr.rdbuf();
-        cerr.rdbuf(out.rdbuf());
-        cerr << fg::blue << s << style::reset;
-        cerr.rdbuf(cerrbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *cerrbuf = std::cerr.rdbuf();
+        std::cerr.rdbuf(out.rdbuf());
+        std::cerr << fg::blue << s << style::reset;
+        std::cerr.rdbuf(cerrbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
 #if defined(OS_LINUX) || defined(OS_MAC)
         REQUIRE(s != output);
@@ -221,18 +222,18 @@ TEST_CASE("Rang printing with control::Force and cerr")
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *cerrbuf = cerr.rdbuf();
-        cerr.rdbuf(out.rdbuf());
-        cerr << fg::blue << s << style::reset;
-        cerr.rdbuf(cerrbuf);
+        std::ofstream out(fileName);
+        std::streambuf *cerrbuf = std::cerr.rdbuf();
+        std::cerr.rdbuf(out.rdbuf());
+        std::cerr << fg::blue << s << style::reset;
+        std::cerr.rdbuf(cerrbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s != output);
         REQUIRE(s.size() < output.size());
@@ -241,60 +242,61 @@ TEST_CASE("Rang printing with control::Force and cerr")
 
 TEST_CASE("Rang printing with control::Off and clog")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Off);
+    rang::setControlMode(control::Off);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *clogbuf = clog.rdbuf();
-        clog.rdbuf(out.rdbuf());
-        clog << fg::blue << s << style::reset;
-        clog.rdbuf(clogbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *clogbuf = std::clog.rdbuf();
+        std::clog.rdbuf(out.rdbuf());
+        std::clog << fg::blue << s << style::reset;
+        std::clog.rdbuf(clogbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Auto")
     {
-        setWinTermMode(winTerm::Auto);
+        rang::setWinTermMode(winTerm::Auto);
 
-        ofstream out(fileName);
-        streambuf *clogbuf = clog.rdbuf();
-        clog.rdbuf(out.rdbuf());
-        clog << fg::blue << s << style::reset;
-        clog.rdbuf(clogbuf);
+        std::ofstream out(fileName);
+        std::streambuf *clogbuf = std::clog.rdbuf();
+        std::clog.rdbuf(out.rdbuf());
+        std::clog << fg::blue << s << style::reset;
+        std::clog.rdbuf(clogbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *clogbuf = clog.rdbuf();
-        clog.rdbuf(out.rdbuf());
-        clog << fg::blue << s << style::reset;
-        clog.rdbuf(clogbuf);
+        std::ofstream out(fileName);
+        std::streambuf *clogbuf = std::clog.rdbuf();
+        std::clog.rdbuf(out.rdbuf());
+        std::clog << fg::blue << s << style::reset;
+        std::clog.rdbuf(clogbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s == output);
     }
@@ -302,24 +304,25 @@ TEST_CASE("Rang printing with control::Off and clog")
 
 TEST_CASE("Rang printing with control::Force and clog")
 {
-    const string s        = "Hello World";
-    const string fileName = "outoutoutout.txt";
+    using namespace rang;
+    const std::string s        = "Hello World";
+    const std::string fileName = "outoutoutout.txt";
 
-    setControlMode(control::Force);
+    rang::setControlMode(control::Force);
 
     SUBCASE("WinTerm = Native")
     {
-        setWinTermMode(winTerm::Native);
-        ofstream out(fileName);
-        streambuf *clogbuf = clog.rdbuf();
-        clog.rdbuf(out.rdbuf());
-        clog << fg::blue << s << style::reset;
-        clog.rdbuf(clogbuf);
+        rang::setWinTermMode(winTerm::Native);
+        std::ofstream out(fileName);
+        std::streambuf *clogbuf = std::clog.rdbuf();
+        std::clog.rdbuf(out.rdbuf());
+        std::clog << fg::blue << s << style::reset;
+        std::clog.rdbuf(clogbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
 #if defined(OS_LINUX) || defined(OS_MAC)
         REQUIRE(s != output);
@@ -331,18 +334,18 @@ TEST_CASE("Rang printing with control::Force and clog")
 
     SUBCASE("WinTerm = Ansi")
     {
-        setWinTermMode(winTerm::Ansi);
+        rang::setWinTermMode(winTerm::Ansi);
 
-        ofstream out(fileName);
-        streambuf *clogbuf = clog.rdbuf();
-        clog.rdbuf(out.rdbuf());
-        clog << fg::blue << s << style::reset;
-        clog.rdbuf(clogbuf);
+        std::ofstream out(fileName);
+        std::streambuf *clogbuf = std::clog.rdbuf();
+        std::clog.rdbuf(out.rdbuf());
+        std::clog << fg::blue << s << style::reset;
+        std::clog.rdbuf(clogbuf);
         out.close();
 
-        ifstream in(fileName);
-        string output;
-        getline(in, output);
+        std::ifstream in(fileName);
+        std::string output;
+        std::getline(in, output);
 
         REQUIRE(s != output);
         REQUIRE(s.size() < output.size());
