@@ -24,6 +24,7 @@
 #endif
 
 #include <windows.h>
+#include <winbase.h>
 #include <io.h>
 #include <memory>
 
@@ -159,6 +160,21 @@ namespace rang_implementation {
 #elif defined(OS_WIN)
         // All windows versions support colors through native console methods
         static constexpr bool result = true;
+#endif
+        return result;
+    }
+
+    inline bool noColorOn() noexcept
+    {
+        bool result = false;
+#if defined(OS_LINUX) || defined(OS_MAC)
+        const char *nocolor = getenv("NO_COLOR");
+        result = nocolor != nullptr;
+#elif defined(OS_WIN)
+        // http://msdn.microsoft.com/en-us/library/ms683188.aspx
+        const DWORD buffsz = 65535;
+        char buff[buffsz] = {0};
+        result = GetEnvironmentVariableA(L"NO_COLOR", &buff[0], buffsz) != 0;
 #endif
         return result;
     }
@@ -471,6 +487,9 @@ template <typename T>
 inline rang_implementation::enableStd<T> operator<<(std::ostream &os,
                                                     const T value)
 {
+    if (rang_implementation::noColorOn())
+        return os;
+
     const control option = rang_implementation::controlMode();
     switch (option) {
         case control::Auto:
