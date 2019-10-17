@@ -23,6 +23,7 @@
 #define _WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
 
+#include <tchar.h>
 #include <windows.h>
 #include <winbase.h>
 #include <io.h>
@@ -169,12 +170,12 @@ namespace rang_implementation {
         bool result = false;
 #if defined(OS_LINUX) || defined(OS_MAC)
         const char *nocolor = getenv("NO_COLOR");
-        result = nocolor != nullptr;
+        result              = nocolor != nullptr;
 #elif defined(OS_WIN)
         // http://msdn.microsoft.com/en-us/library/ms683188.aspx
         const DWORD buffsz = 65535;
-        char buff[buffsz] = {0};
-        result = GetEnvironmentVariableA(L"NO_COLOR", &buff[0], buffsz) != 0;
+        char buff[buffsz]  = { 0 };
+        result = GetEnvironmentVariable(_T("NO_COLOR"), &buff[0], buffsz) != 0;
 #endif
         return result;
     }
@@ -222,7 +223,8 @@ namespace rang_implementation {
                                              sizeof(MY_FILE_NAME_INFO))) {
             return false;
         }
-        std::wstring name(pNameInfo->FileName, pNameInfo->FileNameLength / sizeof(WCHAR));
+        std::wstring name(pNameInfo->FileName,
+                          pNameInfo->FileNameLength / sizeof(WCHAR));
         if ((name.find(L"msys-") == std::wstring::npos
              && name.find(L"cygwin-") == std::wstring::npos)
             || name.find(L"-pty") == std::wstring::npos) {
@@ -487,8 +489,7 @@ template <typename T>
 inline rang_implementation::enableStd<T> operator<<(std::ostream &os,
                                                     const T value)
 {
-    if (rang_implementation::noColorOn())
-        return os;
+    if (rang_implementation::noColorOn()) return os;
 
     const control option = rang_implementation::controlMode();
     switch (option) {
