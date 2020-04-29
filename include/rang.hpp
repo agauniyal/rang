@@ -124,13 +124,13 @@ enum class winTerm {  // Windows Terminal Mode
 
 namespace rang_implementation {
 
-    inline std::atomic<control> &controlMode() noexcept
+    inline auto &controlMode() noexcept
     {
         static std::atomic<control> value(control::Auto);
         return value;
     }
 
-    inline std::atomic<winTerm> &winTermMode() noexcept
+    inline auto &winTermMode() noexcept
     {
         static std::atomic<winTerm> termMode(winTerm::Auto);
         return termMode;
@@ -166,7 +166,7 @@ namespace rang_implementation {
 #ifdef OS_WIN
 
 
-    inline bool isMsysPty(int fd) noexcept
+    inline auto isMsysPty(int fd) noexcept
     {
         // Dynamic load for binary compability with old Windows
         const auto ptrGetFileInformationByHandleEx
@@ -177,7 +177,7 @@ namespace rang_implementation {
             return false;
         }
 
-        HANDLE h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
+        auto h = reinterpret_cast<HANDLE>(_get_osfhandle(fd));
         if (h == INVALID_HANDLE_VALUE) {
             return false;
         }
