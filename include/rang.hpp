@@ -7,6 +7,8 @@
 #define OS_WIN
 #elif defined(__APPLE__) || defined(__MACH__)
 #define OS_MAC
+#elif defined(__wasi__)
+#define OS_WASI
 #else
 #error Unknown Platform
 #endif
@@ -37,7 +39,10 @@
 #endif
 
 #include <algorithm>
+// As of WASI-SDK 12, does not support atomic
+#ifndef OS_WASI
 #include <atomic>
+#endif
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -124,21 +129,33 @@ enum class winTerm {  // Windows Terminal Mode
 
 namespace rang_implementation {
 
+#ifndef OS_WASI
     inline std::atomic<control> &controlMode() noexcept
     {
         static std::atomic<control> value(control::Auto);
+#else
+    inline control &controlMode() noexcept
+    {
+        static control value(control::Auto);
+#endif
         return value;
     }
 
+#ifndef OS_WASI
     inline std::atomic<winTerm> &winTermMode() noexcept
     {
         static std::atomic<winTerm> termMode(winTerm::Auto);
+#else
+    inline winTerm &winTermMode() noexcept
+    {
+        static winTerm termMode(winTerm::Auto);
+#endif
         return termMode;
     }
 
     inline bool supportsColor() noexcept
     {
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WASI)
 
         static const bool result = [] {
             const char *Terms[]
