@@ -42,7 +42,7 @@ Or, if you use the [conan package manager](https://www.conan.io/), follow these 
 1. Add a reference to *rang* to the *requires* section of your project's `conanfile.txt` file:
 
         [requires]
-        rang/3.1.0@rang/stable
+        rang/3.2@rang/stable
 
 2. Run conan's install command:
 
