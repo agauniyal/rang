@@ -8,7 +8,6 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 
 function(rang_add_test file_name)
     add_executable("${file_name}" "${file_name}.cpp")
-    target_link_libraries("${file_name}" rang)
 endfunction()
 
 # simple tests #################################################################
@@ -23,7 +22,7 @@ find_package(doctest)
 
 if (${doctest_FOUND} EQUAL 1)
     add_executable(all_rang_tests "test.cpp")
-    target_link_libraries(all_rang_tests rang doctest::doctest)
+    target_link_libraries(all_rang_tests doctest::doctest)
 
     enable_testing()
 
