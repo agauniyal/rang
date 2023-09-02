@@ -1,4 +1,4 @@
-#include "rang.hpp"
+#include "../include/rang.hpp"
 #include <cstdlib>
 
 using std::cout;
