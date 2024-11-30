@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16.3)
 
-project(rang 
+project(rang
     VERSION 3.2.0
     LANGUAGES CXX)
 
