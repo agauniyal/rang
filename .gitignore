@@ -29,3 +29,14 @@
 
 build/
 .vscode/
+
+# Conan
+conanbuildinfo.*
+conaninfo.txt
+conanbuild.sh
+conanrun.sh
+deactivate_conanbuild.sh
+deactivate_conanrun.sh
+test_package/build*/
+CMakeUserPresets.json
+venv/
