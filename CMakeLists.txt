@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 
 project(rang 
     VERSION 3.2.0
@@ -84,3 +84,9 @@ install(EXPORT ${targets_export_name}
 
 install(FILES ${RANG_HEADERS} DESTINATION "${RANG_INC_DIR}")
 install(FILES "${pkgconfig}" DESTINATION "${RANG_PKGCONFIG_DIR}")
+
+option(BUILD_TESTING "Build tests" ON)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(test)
+endif()
