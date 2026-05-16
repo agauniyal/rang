@@ -27,6 +27,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install meson ninja conan gcovr
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install -y doctest-dev
+        fi
+      shell: bash
 
     - name: Test Conan
       run: |
@@ -39,6 +44,7 @@ jobs:
         meson setup build_meson -Db_coverage=true
         meson compile -C build_meson
         meson test -C build_meson
+        ninja -C build_meson coverage-xml
 
     - name: Test Meson (Other)
       if: runner.os != 'Linux'
