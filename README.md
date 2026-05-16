@@ -1,4 +1,4 @@
-# rang [![Build Status](https://travis-ci.org/agauniyal/rang.svg?branch=master)](https://travis-ci.org/agauniyal/rang) [![Build status](https://ci.appveyor.com/api/projects/status/jqpdoelli38h2a7w?svg=true)](https://ci.appveyor.com/project/agauniyal/rang) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang) [ ![Download](https://api.bintray.com/packages/agauniyal/rang/rang%3Arang/images/download.svg) ](https://bintray.com/agauniyal/rang/rang%3Arang/_latestVersion)
+# rang [![CI](https://github.com/agauniyal/rang/actions/workflows/ci.yml/badge.svg)](https://github.com/agauniyal/rang/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang) [ ![Download](https://api.bintray.com/packages/agauniyal/rang/rang%3Arang/images/download.svg) ](https://bintray.com/agauniyal/rang/rang%3Arang/_latestVersion)
 
 ##### Colors for your Terminal.
 
