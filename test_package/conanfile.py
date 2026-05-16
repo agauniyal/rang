@@ -1,28 +1,28 @@
 import os
 from conan import ConanFile
 from conan.tools.build import can_run
-from conan.tools.meson import MesonToolchain, Meson
-from conan.tools.env import VirtualRunEnv
+from conan.tools.cmake import CMakeToolchain, CMakeDeps, CMake, cmake_layout
+
 
 class RangTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    generators = "PkgConfigDeps", "VirtualRunEnv"
 
     def requirements(self):
         self.requires(self.tested_reference_str)
 
     def layout(self):
-        from conan.tools.layout import basic_layout
-        basic_layout(self)
+        cmake_layout(self)
 
     def generate(self):
-        tc = MesonToolchain(self)
+        tc = CMakeToolchain(self)
         tc.generate()
+        deps = CMakeDeps(self)
+        deps.generate()
 
     def build(self):
-        meson = Meson(self)
-        meson.configure()
-        meson.build()
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
 
     def test(self):
         if can_run(self):

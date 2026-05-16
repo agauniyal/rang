@@ -15,6 +15,9 @@ class RangConan(ConanFile):
     def requirements(self):
         self.test_requires("doctest/2.4.11")
 
+    def build_requirements(self):
+        self.tool_requires("pkgconf/2.1.0")
+
     def layout(self):
         from conan.tools.layout import basic_layout
         basic_layout(self)
