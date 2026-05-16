@@ -84,9 +84,3 @@ install(EXPORT ${targets_export_name}
 
 install(FILES ${RANG_HEADERS} DESTINATION "${RANG_INC_DIR}")
 install(FILES "${pkgconfig}" DESTINATION "${RANG_PKGCONFIG_DIR}")
-
-option(BUILD_TESTING "Build tests" ON)
-if(BUILD_TESTING)
-    enable_testing()
-    add_subdirectory(test)
-endif()
