@@ -1,5 +1,7 @@
-from conans import ConanFile, Meson
-
+import os
+from conan import ConanFile
+from conan.tools.meson import MesonToolchain, Meson
+from conan.tools.files import copy
 
 class RangConan(ConanFile):
     name = "rang"
@@ -7,19 +9,31 @@ class RangConan(ConanFile):
     license = "The Unlicense"
     url = "https://github.com/agauniyal/rang"
     description = "A Minimal, Header only Modern c++ library for colors in your terminal"
-    generators = "pkg_config"
-    build_requires = "doctest/2.4.11"
-    exports_sources = "*"
-    settings = "build_type"
+    settings = "os", "compiler", "build_type", "arch"
+    exports_sources = "meson.build", "include/*", "test/*", "CMakeLists.txt", "LICENSE", "README.md", "cmake/*"
+
+    def requirements(self):
+        self.test_requires("doctest/2.4.11")
+
+    def layout(self):
+        from conan.tools.layout import basic_layout
+        basic_layout(self)
+
+    def generate(self):
+        tc = MesonToolchain(self)
+        tc.generate()
+        from conan.tools.gnu import PkgConfigDeps
+        pc = PkgConfigDeps(self)
+        pc.generate()
 
     def build(self):
         meson = Meson(self)
-        meson.configure(cache_build_folder="build")
+        meson.configure()
         meson.build()
 
     def package(self):
-        self.copy("*.hpp")
-        self.copy(pattern="LICENSE", dst="licenses", keep_path=False)
+        copy(self, "*.hpp", os.path.join(self.source_folder, "include"), os.path.join(self.package_folder, "include"))
+        copy(self, "LICENSE", self.source_folder, os.path.join(self.package_folder, "licenses"))
 
     def package_id(self):
-        self.info.header_only()
+        self.info.clear()

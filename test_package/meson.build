@@ -1,7 +1,7 @@
-project('rang', 'cpp', version : '3.2.0',
+project('rang_test', 'cpp', version : '3.2.0',
 		default_options : ['cpp_std=c++11'])
 
-inc = include_directories('include')
+rang_dep = dependency('rang')
 
-visualTest = executable('visualTest', 'visualTest.cpp', include_directories : inc)
+visualTest = executable('visualTest', 'visualTest.cpp', dependencies : rang_dep)
 test('visualTest', visualTest)
