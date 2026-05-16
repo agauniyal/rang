@@ -1,4 +1,4 @@
-# rang [![CI](https://github.com/agauniyal/rang/actions/workflows/ci.yml/badge.svg)](https://github.com/agauniyal/rang/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang) [ ![Download](https://api.bintray.com/packages/agauniyal/rang/rang%3Arang/images/download.svg) ](https://bintray.com/agauniyal/rang/rang%3Arang/_latestVersion)
+# rang [![CI](https://github.com/agauniyal/rang/actions/workflows/ci.yml/badge.svg)](https://github.com/agauniyal/rang/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/agauniyal/rang/branch/master/graph/badge.svg)](https://codecov.io/gh/agauniyal/rang)
 
 ##### Colors for your Terminal.
 
