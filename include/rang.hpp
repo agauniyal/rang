@@ -113,6 +113,8 @@ enum class control {  // Behaviour of rang function calls
     Force = 2  // force ansi color output to non terminal streams
 };
 // Use rang::setControlMode to set rang control mode
+// The default can be set by environment variables: https://bixense.com/clicolors/
+// NO_COLOR to disable color output, CLICOLOR_FORCE to force color output
 
 enum class winTerm {  // Windows Terminal Mode
     Auto   = 0,  // (Default) automatically detects wheter Ansi or Native API
@@ -126,7 +128,16 @@ namespace rang_implementation {
 
     inline std::atomic<control> &controlMode() noexcept
     {
-        static std::atomic<control> value(control::Auto);
+        static std::atomic<control> value = [] {
+            // https://bixense.com/clicolors/
+            if (std::getenv("NO_COLOR") != nullptr) {
+                return control::Off;
+            }
+            if (std::getenv("CLICOLOR_FORCE") != nullptr) {
+                return control::Force;
+            }
+            return control::Auto;
+        }();
         return value;
     }
 
