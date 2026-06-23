@@ -142,9 +142,9 @@ namespace rang_implementation {
 
         static const bool result = [] {
             const char *Terms[]
-              = { "ansi",    "color",  "console", "cygwin", "gnome",
-                  "konsole", "kterm",  "linux",   "msys",   "putty",
-                  "rxvt",    "screen", "vt100",   "xterm" };
+              = { "ansi",    "color",  "console", "cygwin", "foot",
+                  "gnome",   "konsole", "kterm",  "linux",  "msys",
+                  "putty",   "rxvt",    "screen", "vt100",  "xterm" };
 
             const char *env_p = std::getenv("TERM");
             if (env_p == nullptr) {
